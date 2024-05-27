@@ -6,30 +6,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class writerHasBooks {
-    private Number idUser;
-    private Number idBook;
+
+    private Integer writerId;
+    private Integer bookId;
+    DataEngine dataEngine=new CsvDataEngine();
 
     public writerHasBooks() {}
 
-    public writerHasBooks(Number idUser, Number idBook) {
-        this.idUser = idUser;
-        this.idBook = idBook;
-        try {
-            FileWriter myWriter = new FileWriter("src/main/java/links.txt", true);
-            myWriter.write(idUser.toString());
-            myWriter.write(',');
-            myWriter.write(idBook.toString());
-            myWriter.write('\n');
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public writerHasBooks(Integer writerId, Integer bookId,Boolean save) {
+        this.writerId = writerId;
+        this.bookId = bookId;
+        if(save){
+            dataEngine.saveNewLink(writerId,bookId);
+        }}
+        public Integer getWriterId(){
+            return writerId;
         }
-    }
+
+        public Integer getBookId(){
+            return bookId;
+        }
+
 
     public static List<Integer> writerBookList(Integer idUser) {
         List<Integer> books = new ArrayList<>();
         try (BufferedReader br =
-                new BufferedReader(new FileReader("src/main/java/writerHasBooks.txt"))) {
+                     new BufferedReader(new FileReader("src/main/java/writerHasBooks.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");

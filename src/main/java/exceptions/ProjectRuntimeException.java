@@ -5,4 +5,3 @@ public abstract class ProjectRuntimeException extends RuntimeException {
         super(s);
     }
 }
-

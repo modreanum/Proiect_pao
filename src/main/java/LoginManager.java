@@ -1,17 +1,42 @@
-public class LoginManager implements LoginManagerInterface{
-    private static final LoginManager instance=new LoginManager();
+import java.util.List;
 
-    public static LoginManager getInstance() {
-        return instance;
+public class LoginManager implements LoginManagerInterface {
+    private final DataEngine dataEngine;
+
+    public LoginManager(DataEngine dataEngine) {
+        this.dataEngine = dataEngine;
     }
 
     @Override
     public Integer authenticate(String username, String password) {
 
-        Integer writerLogin = Writer.logIn(username, password);
+        Integer writerLogin = this.logIn(username, password, true);
         if (writerLogin != null) return 1;
-        Integer readerLogin = Reader.logIn(username, password);
+        Integer readerLogin = this.logIn(username, password, false);
         if (readerLogin != null) return -1;
         return 0;
+    }
+
+    public Integer logIn(String username, String password, Boolean isWriter) {
+        List<User> users;
+        if (isWriter) {
+
+            users = this.dataEngine.getWriters();
+        } else {
+            users = this.dataEngine.getReaders();
+        }
+        ObjectSearch<User> objectSearch = new ObjectSearch<>();
+        List<User> matchedUsers =
+                objectSearch.search(
+                        users,
+                        user ->
+                                user.getUsername().equals(username)
+                                        && user.getPassword().equals(password));
+
+        if (!matchedUsers.isEmpty()) {
+            return matchedUsers.get(0).getId();
+        } else {
+            return null;
+        }
     }
 }
