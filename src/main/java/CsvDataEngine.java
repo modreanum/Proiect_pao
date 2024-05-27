@@ -9,10 +9,6 @@ public class CsvDataEngine implements DataEngine {
     private final String folder;
     public static final String DEFAULT_FOLDER = "src/main/resources/CSV/";
 
-    public CsvDataEngine(String folder) {
-        this.folder = folder;
-    }
-
     public CsvDataEngine() {
         this.folder = DEFAULT_FOLDER;
     }
@@ -21,7 +17,7 @@ public class CsvDataEngine implements DataEngine {
     public List<User> getWriters() {
         List<User> users = new ArrayList<>();
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.WRITER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.WRITER.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -29,11 +25,11 @@ public class CsvDataEngine implements DataEngine {
                     Integer id = Integer.parseInt(values[0]);
                     String fileUsername = values[1];
                     String filePassword = values[2];
-                    users.add(new Writer(id, fileUsername, filePassword, false));
+                    users.add(new Writer(id, fileUsername, filePassword));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return users;
     }
@@ -42,7 +38,7 @@ public class CsvDataEngine implements DataEngine {
     public List<User> getReaders() {
         List<User> users = new ArrayList<>();
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.READER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.READER.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -50,31 +46,29 @@ public class CsvDataEngine implements DataEngine {
                     Integer id = Integer.parseInt(values[0]);
                     String fileUsername = values[1];
                     String filePassword = values[2];
-                    users.add(new Reader(id, fileUsername, filePassword, false));
+                    users.add(new Reader(id, fileUsername, filePassword));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return users;
     }
-
-
+@Override
     public List<Book> getBooks() {
         List<Book> books = new ArrayList<>();
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.BOOK.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.BOOK.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 if (values.length >= 2) {
                     Integer id = Integer.parseInt(values[0]);
                     String title = values[1];
-                    books.add(new Book(id, title, false));
+                    books.add(new Book(id, title));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return books;
     }
@@ -83,7 +77,7 @@ public class CsvDataEngine implements DataEngine {
     public User getWriter(String username, String password) {
 
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.WRITER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.WRITER.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -92,56 +86,23 @@ public class CsvDataEngine implements DataEngine {
                     String filePassword = values[2];
                     if (fileUsername.equals(username) && filePassword.equals(password)) {
                         Writer writer =
-                                new Writer(
-                                        Integer.parseInt(values[0]),
-                                        values[1],
-                                        values[2],
-                                        false);
+                                new Writer(Integer.parseInt(values[0]), values[1], values[2]);
                         System.out.println(writer.id);
                         return writer;
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return null;
     }
 
-
-    @Override
-    public User getWriterByName(String username) {
-
-        try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.WRITER.getPath()))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                if (values.length >= 3) {
-                    String fileUsername = values[1];
-                    String filePassword = values[2];
-                    if (fileUsername.equals(username)) {
-                        Writer writer =
-                                new Writer(
-                                        Integer.parseInt(values[0]),
-                                        values[1],
-                                        values[2],
-                                        false);
-                        System.out.println(writer.id);
-                        return writer;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
     @Override
     public User getReader(String username, String password) {
 
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.READER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.READER.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -150,21 +111,18 @@ public class CsvDataEngine implements DataEngine {
                     String filePassword = values[2];
                     if (fileUsername.equals(username) && filePassword.equals(password)) {
                         Reader reader =
-                                new Reader(
-                                        Integer.parseInt(values[0]), values[1], values[2], false);
+                                new Reader(Integer.parseInt(values[0]), values[1], values[2]);
                         return reader;
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return null;
     }
-
-
+@Override
     public Integer lastUserId(Boolean isWriter) {
-        int lastId = 0;
         List<User> users;
         if (isWriter) {
 
@@ -177,9 +135,8 @@ public class CsvDataEngine implements DataEngine {
         } else {
             return 0;
         }
-
     }
-
+@Override
     public void saveNewUser(Integer id, String username, String password, Boolean isWriter) {
         List<User> users;
         String file;
@@ -190,17 +147,16 @@ public class CsvDataEngine implements DataEngine {
             file = FilePaths.READER.getPath();
         }
         if (isWriter) {
-            try (FileWriter writer = new FileWriter(this.folder + FilePaths.WRITER.getPath(), true)) {
+            try (FileWriter writer =
+                    new FileWriter(this.folder + FilePaths.WRITER.getPath(), true)) {
                 writer.append(id.toString())
                         .append(',')
                         .append(username)
                         .append(',')
                         .append(password)
-                        .append(',')
-                        .append('0')
                         .append('\n');
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
+
             }
         } else {
             try (FileWriter writer = new FileWriter(this.folder + file, true)) {
@@ -210,34 +166,35 @@ public class CsvDataEngine implements DataEngine {
                         .append(',')
                         .append(password)
                         .append('\n');
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
+
             }
         }
     }
-
+@Override
     public void saveNewBook(Integer id, String title) {
-
 
         try (FileWriter writer = new FileWriter(this.folder + FilePaths.BOOK.getPath(), true)) {
             writer.write(id.toString());
             writer.write(',');
             writer.write(title);
             writer.write('\n');
-            //writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
     }
-
-    public void saveNewChapter(Integer bookId, Integer chapterId, String title, String content) {
+@Override
+    public void saveNewChapter(
+            Integer bookId, Integer chapterId, String title, List<String> content) {
 
         String fileName = this.folder + "chapter_" + bookId + "_" + chapterId + ".txt";
 
         try (FileWriter fileWriter = new FileWriter(fileName)) {
+            for (String line : content) {
 
-            fileWriter.write(content);
-
+                fileWriter.write(line);
+                fileWriter.write("\n");
+            }
         } catch (IOException ignored) {
 
         }
@@ -249,16 +206,17 @@ public class CsvDataEngine implements DataEngine {
             writer.write(title);
             writer.write('\n');
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
     }
-
+@Override
     public List<Chapter> getChapters(Integer idBook) {
 
         List<Chapter> chapters = new ArrayList<>();
+        List<String> content = new ArrayList<>();
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.CHAPTER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.CHAPTER.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -266,31 +224,34 @@ public class CsvDataEngine implements DataEngine {
                     Integer id = Integer.parseInt(values[0]);
                     Integer id2 = Integer.parseInt(values[1]);
                     String title = values[2];
-                    chapters.add(new Chapter(id, id2, title, "", false));
+                    chapters.add(new Chapter(id, id2, title, content));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return chapters;
-
     }
-
+@Override
     public Integer lastChapterId(Integer bookId) {
-        int lastId = 0;
+
         List<Chapter> chapters;
-
+        ObjectSearch<Chapter> objectSearch = new ObjectSearch<>();
         chapters = this.getChapters(bookId);
+        List<Chapter> matched =
+                objectSearch.search(
+                        chapters,
+                        chapter ->
+                                chapter.getBookId().equals(bookId));
 
-        if (chapters != null && !chapters.isEmpty()) {
-            return chapters.get(chapters.size() - 1).getChapterId();
+        if (matched != null && !matched.isEmpty()) {
+            return matched.get(matched.size() - 1).getChapterId();
         } else {
             return 0;
         }
     }
-
+@Override
     public Integer lastBookId() {
-        int lastId = 0;
         List<Book> books;
 
         books = this.getBooks();
@@ -301,29 +262,27 @@ public class CsvDataEngine implements DataEngine {
             return 0;
         }
     }
-
-
+@Override
     public void saveNewLink(Integer userId, Integer bookId) {
 
-        try (FileWriter writer = new FileWriter(this.folder + FilePaths.WRITER_HAS_BOOKS.getPath(), true)) {
+        try (FileWriter writer =
+                new FileWriter(this.folder + FilePaths.WRITER_HAS_BOOKS.getPath(), true)) {
             writer.write(userId.toString());
             writer.write('-');
             writer.write(bookId.toString());
             writer.write('\n');
-            //writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
     }
-
+@Override
     public Boolean verifyBookOwnership(Integer writerId, Integer bookId) {
-        List<writerHasBooks> links;
-
+        List<WriterHasBooks> links;
 
         links = this.getLinks();
 
-        ObjectSearch<writerHasBooks> objectSearch = new ObjectSearch<>();
-        List<writerHasBooks> matched =
+        ObjectSearch<WriterHasBooks> objectSearch = new ObjectSearch<>();
+        List<WriterHasBooks> matched =
                 objectSearch.search(
                         links,
                         link ->
@@ -336,33 +295,33 @@ public class CsvDataEngine implements DataEngine {
             return false;
         }
     }
+@Override
+    public List<WriterHasBooks> getLinks() {
 
-    public List<writerHasBooks> getLinks() {
-
-        List<writerHasBooks> links = new ArrayList<>();
+        List<WriterHasBooks> links = new ArrayList<>();
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.WRITER_HAS_BOOKS.getPath()))) {
+                new BufferedReader(
+                        new FileReader(this.folder + FilePaths.WRITER_HAS_BOOKS.getPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split("-");
                 if (values.length >= 2) {
                     Integer id = Integer.parseInt(values[0]);
                     Integer id2 = Integer.parseInt(values[1]);
-                    links.add(new writerHasBooks(id, id2, false));
+                    links.add(new WriterHasBooks(id, id2));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return links;
-
     }
-
-
+@Override
     public Chapter getChapter(Integer bookId, Integer chapterId) {
         try (BufferedReader br =
-                     new BufferedReader(new FileReader(this.folder + FilePaths.CHAPTER.getPath()))) {
+                new BufferedReader(new FileReader(this.folder + FilePaths.CHAPTER.getPath()))) {
             String line;
+            List<String> stringList;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 if (values.length >= 3) {
@@ -370,32 +329,26 @@ public class CsvDataEngine implements DataEngine {
                     Integer chapterId1 = Integer.parseInt(values[1]);
                     String title = values[2];
                     if (bookId.equals(bookId1) && chapterId.equals(chapterId1)) {
-                        String bf2= this.folder + "chapter_" + bookId + "_" + chapterId + ".txt";
-                        String content = getChapterText(bf2);
-                        Chapter chapter = new Chapter(bookId, chapterId, title, content, false);
+                        String bf2 = this.folder + "chapter_" + bookId + "_" + chapterId + ".txt";
+                        stringList = getChapterText(bf2);
+                        Chapter chapter = new Chapter(bookId, chapterId, title, stringList);
                         return chapter;
                     }
-
                 }
             }
-        } catch (IOException e) {
-            e.getMessage();
+        } catch (IOException ignored) {
         }
         return null;
-
     }
-
-    public String getChapterText(String filePath) throws IOException {
-        StringBuilder contentBuilder = new StringBuilder();
+@Override
+    public List<String> getChapterText(String filePath) throws IOException {
+        List<String> stringList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                contentBuilder.append(line).append(System.lineSeparator());
+                stringList.add(line);
             }
         }
-        return contentBuilder.toString();
+        return stringList;
     }
 }
-
-
-

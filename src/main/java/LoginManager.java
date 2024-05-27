@@ -16,7 +16,7 @@ public class LoginManager implements LoginManagerInterface {
         if (readerLogin != null) return -1;
         return 0;
     }
-
+@Override
     public Integer logIn(String username, String password, Boolean isWriter) {
         List<User> users;
         if (isWriter) {
@@ -26,15 +26,15 @@ public class LoginManager implements LoginManagerInterface {
             users = this.dataEngine.getReaders();
         }
         ObjectSearch<User> objectSearch = new ObjectSearch<>();
-        List<User> matchedUsers =
+        List<User> foundUsers =
                 objectSearch.search(
                         users,
                         user ->
                                 user.getUsername().equals(username)
                                         && user.getPassword().equals(password));
 
-        if (!matchedUsers.isEmpty()) {
-            return matchedUsers.get(0).getId();
+        if (!foundUsers.isEmpty()) {
+            return foundUsers.get(0).getId();
         } else {
             return null;
         }

@@ -5,7 +5,6 @@ public enum FilePaths {
     CHAPTER("chapters.txt"),
     WRITER_HAS_BOOKS("writerHasBooks.txt");
 
-
     private final String path;
 
     FilePaths(String path) {
